@@ -1,4 +1,4 @@
-
+﻿
 // DependencyManager.h : main header file for the DependencyManager application
 //
 #pragma once
@@ -14,11 +14,12 @@
 // See DependencyManager.cpp for the implementation of this class
 //
 
-class CDependencyManagerApp : public CWinAppEx
-{
+class CDependencyManagerApp : public CWinAppEx {
 public:
 	CDependencyManagerApp() noexcept;
 
+public:
+	stdfs::path m_pathStart;
 
 // Overrides
 public:

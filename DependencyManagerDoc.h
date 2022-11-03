@@ -1,4 +1,4 @@
-
+﻿
 // DependencyManagerDoc.h : interface of the CDependencyManagerDoc class
 //
 

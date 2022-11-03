@@ -1,4 +1,4 @@
-
+﻿
 // DependencyManager.cpp : Defines the class behaviors for the application.
 //
 
@@ -30,8 +30,7 @@ END_MESSAGE_MAP()
 
 // CDependencyManagerApp construction
 
-CDependencyManagerApp::CDependencyManagerApp() noexcept
-{
+CDependencyManagerApp::CDependencyManagerApp() noexcept {
 	m_bHiColorIcons = TRUE;
 
 
@@ -59,8 +58,7 @@ CDependencyManagerApp theApp;
 
 // CDependencyManagerApp initialization
 
-BOOL CDependencyManagerApp::InitInstance()
-{
+BOOL CDependencyManagerApp::InitInstance() {
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
@@ -95,8 +93,10 @@ BOOL CDependencyManagerApp::InitInstance()
 	// Change the registry key under which our settings are stored
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
-	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
-	LoadStdProfileSettings(4);  // Load standard INI file options (including MRU)
+	SetRegistryKey(_T("Biscuit-lab.com"));
+	LoadStdProfileSettings(0);  // Load standard INI file options (including MRU)
+
+	m_pathStart = stdfs::current_path();
 
 
 	InitContextMenuManager();
@@ -147,8 +147,7 @@ BOOL CDependencyManagerApp::InitInstance()
 	return TRUE;
 }
 
-int CDependencyManagerApp::ExitInstance()
-{
+int CDependencyManagerApp::ExitInstance() {
 	//TODO: handle additional resources you may have added
 	AfxOleTerm(FALSE);
 
@@ -160,8 +159,7 @@ int CDependencyManagerApp::ExitInstance()
 
 // CAboutDlg dialog used for App About
 
-class CAboutDlg : public CDialogEx
-{
+class CAboutDlg : public CDialogEx {
 public:
 	CAboutDlg() noexcept;
 
@@ -178,12 +176,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
-{
+CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
+void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
 	CDialogEx::DoDataExchange(pDX);
 }
 
@@ -191,16 +187,14 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 // App command to run the dialog
-void CDependencyManagerApp::OnAppAbout()
-{
+void CDependencyManagerApp::OnAppAbout() {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
 
 // CDependencyManagerApp customization load/save methods
 
-void CDependencyManagerApp::PreLoadState()
-{
+void CDependencyManagerApp::PreLoadState() {
 	BOOL bNameValid;
 	CString strName;
 	bNameValid = strName.LoadString(IDS_EDIT_MENU);
@@ -208,12 +202,10 @@ void CDependencyManagerApp::PreLoadState()
 	GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EDIT);
 }
 
-void CDependencyManagerApp::LoadCustomState()
-{
+void CDependencyManagerApp::LoadCustomState() {
 }
 
-void CDependencyManagerApp::SaveCustomState()
-{
+void CDependencyManagerApp::SaveCustomState() {
 }
 
 // CDependencyManagerApp message handlers

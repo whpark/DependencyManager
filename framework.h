@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
@@ -28,6 +28,58 @@
 
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
 
+#undef min
+#undef max
+
+#include <cstdint>
+#include <map>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <shared_mutex>
+#include <array>
+#include <list>
+#include <compare>
+#include <vector>
+#include <deque>
+#include <mutex>
+#include <thread>
+#include <format>
+#include <optional>
+#include <chrono>
+#include <filesystem>
+#include <regex>
+#include <span>
+#include <ranges>
+
+#include "gsl/gsl"
+
+#define FMT_HEADER_ONLY
+#include "fmt/format.h"
+#include "fmt/xchar.h"
+#include "fmt/color.h"
+#include "fmt/chrono.h"
+#include "fmt/std.h"
+#include "fmt/os.h"
+#include "fmt/ranges.h"
+
+//using namespace std;
+using namespace std::literals;
+namespace stdc = std::chrono;
+namespace stdfs = std::filesystem;
+namespace ranges = std::ranges;
+namespace views = std::ranges::views;
+
+//using namespace cv;
+//using namespace qtl;
+using uint8 =  std::uint8_t;
+using uint16 = std::uint16_t;
+using uint32 = std::uint32_t;
+using uint64 = std::uint64_t;
+using int8 =   std::int8_t;
+using int16 =  std::int16_t;
+using int32 =  std::int32_t;
+using int64 =  std::int64_t;
 
 
 

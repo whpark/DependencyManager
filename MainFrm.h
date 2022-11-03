@@ -1,11 +1,10 @@
-
+﻿
 // MainFrm.h : interface of the CMainFrame class
 //
 
 #pragma once
 
-class CMainFrame : public CMDIFrameWndEx
-{
+class CMainFrame : public CMDIFrameWndEx {
 	DECLARE_DYNAMIC(CMainFrame)
 public:
 	CMainFrame() noexcept;
@@ -30,10 +29,7 @@ public:
 #endif
 
 protected:  // control bar embedded members
-	CMFCMenuBar       m_wndMenuBar;
-	CMFCToolBar       m_wndToolBar;
 	CMFCStatusBar     m_wndStatusBar;
-	CMFCToolBarImages m_UserImages;
 
 // Generated message map functions
 protected:
@@ -44,5 +40,3 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 };
-
-

@@ -1,4 +1,4 @@
-
+﻿
 // DependencyManagerDoc.cpp : implementation of the CDependencyManagerDoc class
 //
 
