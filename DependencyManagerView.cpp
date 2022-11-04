@@ -255,10 +255,14 @@ std::optional<std::set<stdfs::path>> CDependencyManagerView::SearchDependencies(
 	std::vector<stdfs::path> foldersDll;
 	int i{};
 	while (i >= 0) {
-		auto str = strFoldersDll.Tokenize(_T("\n"), i);
-		str.Trim();
-		if (!str.IsEmpty())
-			foldersDll.emplace_back((LPCTSTR)str);
+		auto strLine = strFoldersDll.Tokenize(_T("\n"), i);
+		int j{};
+		while (j >= 0) {
+			auto str = strLine.Tokenize(_T(";"), j);
+			str.Trim();
+			if (!str.IsEmpty())
+				foldersDll.emplace_back((LPCTSTR)str);
+		}
 	};
 
 	std::deque<stdfs::path> pathsModuleToCheck;
