@@ -76,7 +76,10 @@ void CDependencyManagerView::OnInitialUpdate() {
 	SetDlgItemText(IDC_PATH_EXE, strPathExe);
 
 	auto strFolderDll = theApp.GetProfileString(_T("misc"), _T("FolderDll"), _T(""));
-	SetDlgItemText(IDC_FOLDER_DLL, strFolderDll);
+	if (strFolderDll.IsEmpty())
+		OnBnClickedResetDllFoldersFromPath();
+	else
+		SetDlgItemText(IDC_FOLDER_DLL, strFolderDll);
 
 	CheckDlgButton(IDC_CHK_COPY_OVERWRITE, theApp.GetProfileInt(_T("misc"), _T("Overwrite"), true) ? 1 : 0);
 	CheckDlgButton(IDC_CHK_COPY_PDB, theApp.GetProfileInt(_T("misc"), _T("CopyPDB"), false) ? 1 : 0);
@@ -95,6 +98,7 @@ CDependencyManagerDoc* CDependencyManagerView::GetDocument() const { ASSERT(m_pD
 // CDependencyManagerView message handlers
 
 BOOL CDependencyManagerView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) {
+	// Clipboard Operations
 	if (nCode == CN_COMMAND) {
 		if (pExtra) {
 			switch (nID) {
@@ -119,6 +123,7 @@ BOOL CDependencyManagerView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMD
 	return CFormView::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
 }
 
+// Clipboard Operations
 CEdit* CDependencyManagerView::GetFocusedEdit() {
 	if (!m_hWnd)
 		return nullptr;
@@ -155,6 +160,7 @@ void CDependencyManagerView::OnEditUndo() {
 	}
 }
 
+// Update UI
 void CDependencyManagerView::OnTimer(UINT_PTR nIDEvent) {
 	switch ((eTIMER)nIDEvent) {
 		using enum eTIMER;
@@ -221,6 +227,7 @@ void CDependencyManagerView::UpdateUI() {
 
 }
 
+// Start
 void CDependencyManagerView::OnBnClickedSearchDllFiles() {
 	if (m_threadSearchDependencies)
 		return;
@@ -249,15 +256,15 @@ void CDependencyManagerView::OnBnClickedSearchDllFiles() {
 	
 }
 
+static std::wstring const g_strNOTFound = L"[NOT FOUND]";
+
 std::optional<std::set<stdfs::path>> CDependencyManagerView::SearchDependencies(std::stop_token stop, stdfs::path const& pathDumpbin, stdfs::path const& pathExe, CString const& strFoldersDll, S_STATUS& s0, std::shared_mutex& mtx) {
 	std::set<stdfs::path> pathsDll;	// result
 
 	std::vector<stdfs::path> foldersDll;
-	int i{};
-	while (i >= 0) {
+	for (int i{}; i >= 0; ) {
 		auto strLine = strFoldersDll.Tokenize(_T("\n"), i);
-		int j{};
-		while (j >= 0) {
+		for (int j{}; j >= 0; ) {
 			auto str = strLine.Tokenize(_T(";"), j);
 			str.Trim();
 			if (!str.IsEmpty())
@@ -358,14 +365,19 @@ std::optional<std::set<stdfs::path>> CDependencyManagerView::SearchDependencies(
 			if (strFName.IsEmpty())
 				break;
 
+			bool bFound{};
 			for (auto const& folderDll : foldersDll) {
 				if (stdfs::path pathNew{folderDll / (LPCTSTR)strFName}; stdfs::exists(pathNew)) {
+					bFound = true;
 					if (pathsDll.contains(pathNew))
 						break;
 					pathsDll.insert(pathNew);
 					pathsModuleToCheck.push_back(pathNew);
 					break;
 				}
+			}
+			if (!bFound) {
+				pathsDll.insert(stdfs::path(g_strNOTFound) / fname);
 			}
 		}
 	}
@@ -417,6 +429,10 @@ void CDependencyManagerView::OnBnClickedCopyDllFiles() {
 
 		CString str;
 		m_lstDll.GetText(i, str);
+		if (str.IsEmpty())
+			continue;
+		if (memcmp(str, g_strNOTFound.c_str(), g_strNOTFound.size()*sizeof(decltype(g_strNOTFound)::value_type)) == 0)
+			continue;
 
 		stdfs::path s {(LPCTSTR)str};
 		auto folderDll = s.parent_path();
