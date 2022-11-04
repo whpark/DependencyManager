@@ -38,6 +38,9 @@
     <ClInclude Include="pch.h">
       <Filter>MFC Framework</Filter>
     </ClInclude>
+    <ClInclude Include="FinalAction.h">
+      <Filter>MFC Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChildFrm.cpp">

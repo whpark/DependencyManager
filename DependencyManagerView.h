@@ -4,7 +4,9 @@
 
 #pragma once
 
+#include "FinalAction.h"
 
+//====================================================================================
 class CDependencyManagerView : public CFormView {
 public:
 	using this_t = CDependencyManagerView;
@@ -44,7 +46,27 @@ public:
 
 protected:
 	CListBox m_lstDll;
-	
+
+protected:
+
+	// UI
+	CProgressCtrl m_progress;
+
+	std::shared_mutex m_mtxStatus;
+	struct S_STATUS {
+		int nTotal{}, iPos{};
+		std::wstring text;
+	} m_status, m_statusBackup;
+
+	CButton m_btnStart, m_btnStop;
+	void UpdateUI();
+	// Search Dependencies
+	std::set<stdfs::path> m_pathsDll;
+
+	std::optional<std::jthread> m_threadSearchDependencies;
+	bool m_bDone{};
+	static std::optional<std::set<stdfs::path>> SearchDependencies(std::stop_token stop, stdfs::path const& pathDumpbin, stdfs::path const& pathExe, CString const& strFoldersDll, S_STATUS& status, std::shared_mutex& mtx);
+
 protected:
 	CString GetDlgItemText(int idc) {
 		CString str;
@@ -54,11 +76,13 @@ protected:
 
 // Generated message map functions
 protected:
-	afx_msg void OnFilePrintPreview();
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
-public:
+
+	afx_msg void OnFilePrintPreview();
+
+	enum class eTIMER : UINT_PTR { _ = 1023, eUpdateUI, };
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
 	CEdit* GetFocusedEdit();
 	afx_msg void OnEditCopy();
 	afx_msg void OnEditCut();
@@ -66,9 +90,10 @@ public:
 	afx_msg void OnEditUndo();
 
 	afx_msg void OnBnClickedSearchDllFiles();
+	afx_msg void OnBnClickedStop();
+	afx_msg void OnBnClickedResetDllFoldersFromPath();
 	afx_msg void OnBnClickedCopyDllFiles();
 	afx_msg void OnBnClickedClearDllFiles();
-	afx_msg void OnBnClickedClearDllFiles2();
 };
 
 #ifndef _DEBUG  // debug version in DependencyManagerView.cpp

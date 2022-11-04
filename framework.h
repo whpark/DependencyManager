@@ -53,16 +53,16 @@
 #include <span>
 #include <ranges>
 
-#include "gsl/gsl"
-
-#define FMT_HEADER_ONLY
-#include "fmt/format.h"
-#include "fmt/xchar.h"
-#include "fmt/color.h"
-#include "fmt/chrono.h"
-#include "fmt/std.h"
-#include "fmt/os.h"
-#include "fmt/ranges.h"
+//#include "gsl/gsl"
+//
+//#define FMT_HEADER_ONLY
+//#include "fmt/format.h"
+//#include "fmt/xchar.h"
+//#include "fmt/color.h"
+//#include "fmt/chrono.h"
+//#include "fmt/std.h"
+//#include "fmt/os.h"
+//#include "fmt/ranges.h"
 
 //using namespace std;
 using namespace std::literals;

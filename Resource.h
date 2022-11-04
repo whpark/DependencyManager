@@ -20,6 +20,7 @@
 #define IDS_EDIT_MENU                   306
 #define IDC_PATH_EXE                    1000
 #define IDC_SEARCH_DLL_FILES            1001
+#define IDC_STOP                        1002
 #define IDC_LST_DLL                     1003
 #define IDC_COPY_DLL_FILES              1004
 #define IDC_PATH_DUMPBIN                1005
@@ -27,15 +28,17 @@
 #define IDC_CLEAR_DLL_FILES             1007
 #define IDC_CHK_COPY_OVERWRITE          1008
 #define IDC_CHK_COPY_PDB                1009
-#define IDC_CLEAR_DLL_FILES2            1011
+#define IDC_PROGRESS                    1010
+#define IDC_RESET_DLL_FOLDERS_FROM_PATH 1011
+#define IDC_STATUS                      1013
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        312
+#define _APS_NEXT_RESOURCE_VALUE        317
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1009
+#define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

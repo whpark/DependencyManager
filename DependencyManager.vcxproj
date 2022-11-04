@@ -188,6 +188,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="FinalAction.h" />
     <ClInclude Include="DependencyManager.h" />
     <ClInclude Include="DependencyManagerDoc.h" />
     <ClInclude Include="DependencyManagerView.h" />
