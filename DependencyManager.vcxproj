@@ -222,6 +222,7 @@
     <Image Include="res\userimages.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="res\DependencyManager.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
