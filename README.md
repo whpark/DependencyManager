@@ -1,6 +1,6 @@
 # DependencyManager
 
-- searches recursively .dll files for .exe, using dumpbin.exe
+- DependencyManager recursively searches dll files for .exe, using dumpbin.exe.
 - copies .dll files to .exe file folder.
 
 ## Environment
