@@ -25,9 +25,16 @@ IMPLEMENT_DYNCREATE(CDependencyManagerView, CFormView)
 BEGIN_MESSAGE_MAP(CDependencyManagerView, CFormView)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
+	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
+	ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
+	ON_COMMAND(ID_EDIT_UNDO, OnEditUndo)
+
 	ON_BN_CLICKED(IDC_SEARCH_DLL_FILES, &CDependencyManagerView::OnBnClickedSearchDllFiles)
 	ON_BN_CLICKED(IDC_COPY_DLL_FILES, &CDependencyManagerView::OnBnClickedCopyDllFiles)
 	ON_BN_CLICKED(IDC_CLEAR_DLL_FILES, &CDependencyManagerView::OnBnClickedClearDllFiles)
+	ON_BN_CLICKED(IDC_CLEAR_DLL_FILES2, &CDependencyManagerView::OnBnClickedClearDllFiles2)
+
 END_MESSAGE_MAP()
 
 // CDependencyManagerView construction/destruction
@@ -65,7 +72,6 @@ void CDependencyManagerView::OnInitialUpdate() {
 	CheckDlgButton(IDC_CHK_COPY_OVERWRITE, theApp.GetProfileInt(_T("misc"), _T("Overwrite"), true) ? 1 : 0);
 	CheckDlgButton(IDC_CHK_COPY_PDB, theApp.GetProfileInt(_T("misc"), _T("CopyPDB"), false) ? 1 : 0);
 
-
 }
 
 void CDependencyManagerView::OnRButtonUp(UINT /* nFlags */, CPoint point) {
@@ -90,6 +96,68 @@ CDependencyManagerDoc* CDependencyManagerView::GetDocument() const { ASSERT(m_pD
 
 // CDependencyManagerView message handlers
 
+BOOL CDependencyManagerView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) {
+	if (nCode == CN_COMMAND) {
+		if (pExtra) {
+			switch (nID) {
+			case ID_EDIT_COPY :
+			case ID_EDIT_CUT :
+			case ID_EDIT_PASTE :
+			case ID_EDIT_UNDO :
+				if (GetFocusedEdit())
+					return true;
+				break;
+			}
+		} else {
+			switch (nID) {
+			case ID_EDIT_COPY :		OnEditCopy(); return true;
+			case ID_EDIT_CUT :		OnEditCut(); return true;
+			case ID_EDIT_PASTE :	OnEditPaste(); return true;
+			case ID_EDIT_UNDO :		OnEditUndo(); return true;
+			}
+		}
+	}
+
+	return CFormView::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
+}
+
+CEdit* CDependencyManagerView::GetFocusedEdit() {
+	if (!m_hWnd)
+		return nullptr;
+	CWnd* pWndFocused = GetFocus();
+	if (!pWndFocused)
+		return nullptr;
+	if (pWndFocused->IsKindOf(RUNTIME_CLASS(CEdit)))
+		return (CEdit*)pWndFocused;
+	TCHAR szClassName[64];
+	::GetClassName(pWndFocused->m_hWnd, szClassName, std::size(szClassName));
+	if (_tcscmp(szClassName, _T("Edit")) == 0)
+		return (CEdit*)pWndFocused;
+
+	return nullptr;
+}
+void CDependencyManagerView::OnEditCopy() {
+	if (auto* pEdit = GetFocusedEdit()) {
+		pEdit->Copy();
+	}
+}
+void CDependencyManagerView::OnEditCut() {
+	if (auto* pEdit = GetFocusedEdit()) {
+		pEdit->Cut();
+	}
+}
+void CDependencyManagerView::OnEditPaste() {
+	if (auto* pEdit = GetFocusedEdit()) {
+		pEdit->Paste();
+	}
+}
+void CDependencyManagerView::OnEditUndo() {
+	if (auto* pEdit = GetFocusedEdit()) {
+		pEdit->Undo();
+	}
+}
+
+
 void CDependencyManagerView::OnBnClickedSearchDllFiles() {
 	CWaitCursor wc;
 
@@ -110,12 +178,13 @@ void CDependencyManagerView::OnBnClickedSearchDllFiles() {
 			foldersDll.emplace_back((LPCTSTR)str);
 	};
 
-	std::deque<stdfs::path> pathModules;
-	pathModules.push_back(pathExe);
+	std::deque<stdfs::path> pathsModuleToCheck;
+	pathsModuleToCheck.push_back(pathExe);
 
-	while (pathModules.size()) {
-		auto pathModule = pathModules.front();
-		pathModules.pop_front();
+	std::set<stdfs::path> pathsDll;
+	while (pathsModuleToCheck.size()) {
+		auto pathModule = pathsModuleToCheck.front();
+		pathsModuleToCheck.pop_front();
 
 		// Create Pipe
 		HANDLE hReadPipe{}, hWritePipe{};
@@ -180,7 +249,7 @@ void CDependencyManagerView::OnBnClickedSearchDllFiles() {
 		static auto const strStart = "Image has the following dependencies:"s;
 		auto pos = text.find(strStart);
 		if (pos == text.npos)
-			return;
+			continue;
 		std::vector<std::string> dlls;
 		for (auto line : std::ranges::split_view(std::string_view{ text.begin() + pos + strStart.size()+4, text.end()}, '\n')) {
 			std::string fname(line.begin(), line.end());
@@ -191,14 +260,18 @@ void CDependencyManagerView::OnBnClickedSearchDllFiles() {
 
 			for (auto const& folderDll : foldersDll) {
 				if (stdfs::path pathNew{folderDll / (LPCTSTR)strFName}; stdfs::exists(pathNew)) {
-					if (m_lstDll.FindStringExact(0, pathNew.c_str()) >= 0)
-						continue;
-					m_lstDll.AddString(pathNew.c_str());
-					pathModules.push_back(pathNew);
+					if (pathsDll.contains(pathNew))
+						break;
+					pathsDll.insert(pathNew);
+					pathsModuleToCheck.push_back(pathNew);
 					break;
 				}
 			}
 		}
+	}
+
+	for (auto const& path : pathsDll) {
+		m_lstDll.AddString(path.c_str());
 	}
 }
 
@@ -246,4 +319,19 @@ void CDependencyManagerView::OnBnClickedCopyDllFiles() {
 
 void CDependencyManagerView::OnBnClickedClearDllFiles() {
 	m_lstDll.ResetContent();
+}
+
+
+void CDependencyManagerView::OnBnClickedClearDllFiles2() {
+	//char* p = std::getenv("path");
+	std::wstring str;
+	size_t len = GetEnvironmentVariable(_T("Path"), nullptr, 0);
+	if (!len or len == (size_t)-1)
+		return;
+	str.assign(len, {});
+	GetEnvironmentVariable(_T("Path"), str.data(), str.size());
+
+	CString strW(str.c_str());
+	strW.Replace(_T(";"), _T("\r\n"));
+	SetDlgItemText(IDC_FOLDER_DLL, strW);
 }

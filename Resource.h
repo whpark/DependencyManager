@@ -26,8 +26,8 @@
 #define IDC_FOLDER_DLL                  1006
 #define IDC_CLEAR_DLL_FILES             1007
 #define IDC_CHK_COPY_OVERWRITE          1008
-#define IDC_CHECK2                      1009
 #define IDC_CHK_COPY_PDB                1009
+#define IDC_CLEAR_DLL_FILES2            1011
 
 // Next default values for new objects
 // 

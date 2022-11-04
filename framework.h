@@ -33,6 +33,7 @@
 
 #include <cstdint>
 #include <map>
+#include <set>
 #include <functional>
 #include <memory>
 #include <mutex>

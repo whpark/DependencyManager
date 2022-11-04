@@ -28,10 +28,11 @@ public:
 
 // Overrides
 public:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	virtual BOOL PreCreateWindow(CREATESTRUCT& cs) override;
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void OnInitialUpdate(); // called first time after construct
+	virtual void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
+	virtual void OnInitialUpdate() override; // called first time after construct
+	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) override;
 
 // Implementation
 public:
@@ -41,6 +42,9 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
+protected:
+	CListBox m_lstDll;
+	
 protected:
 	CString GetDlgItemText(int idc) {
 		CString str;
@@ -55,10 +59,16 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
 public:
+	CEdit* GetFocusedEdit();
+	afx_msg void OnEditCopy();
+	afx_msg void OnEditCut();
+	afx_msg void OnEditPaste();
+	afx_msg void OnEditUndo();
+
 	afx_msg void OnBnClickedSearchDllFiles();
 	afx_msg void OnBnClickedCopyDllFiles();
-	CListBox m_lstDll;
 	afx_msg void OnBnClickedClearDllFiles();
+	afx_msg void OnBnClickedClearDllFiles2();
 };
 
 #ifndef _DEBUG  // debug version in DependencyManagerView.cpp
